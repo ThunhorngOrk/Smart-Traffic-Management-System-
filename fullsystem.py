@@ -1,20 +1,25 @@
 from collections import deque
 
-# -----------------------------
+# =====================================================
+# SMART TRAFFIC MANAGEMENT SYSTEM
+# =====================================================
+
+# -----------------------------------------------------
 # GRAPH
-# -----------------------------
+# Road Network (BFS Shortest Path)
+# -----------------------------------------------------
 
 road_network = {
-    "Stop 1": ["Stop 2"],
-    "Stop 2": ["Stop 1", "Stop 3"],
-    "Stop 3": ["Stop 2", "Stop 4"],
-    "Stop 4": ["Stop 3", "Stop 5"],
-    "Stop 5": ["Stop 4", "Stop 6"],
-    "Stop 6": ["Stop 5", "Stop 7"],
-    "Stop 7": ["Stop 6", "Stop 8"],
-    "Stop 8": ["Stop 7", "Stop 9"],
-    "Stop 9": ["Stop 8", "Stop 10"],
-    "Stop 10": ["Stop 9"]
+    "A": ["B"],
+    "B": ["A", "C"],
+    "C": ["B", "D"],
+    "D": ["C", "E"],
+    "E": ["D", "F"],
+    "F": ["E", "G"],
+    "G": ["F", "H"],
+    "H": ["G", "I"],
+    "I": ["H", "J"],
+    "J": ["I"]
 }
 
 
@@ -35,112 +40,117 @@ def shortest_path(graph, start, end):
 
             visited.add(node)
 
-            for neighbour in graph[node]:
+            for neighbor in graph[node]:
                 new_path = list(path)
-                new_path.append(neighbour)
+                new_path.append(neighbor)
                 queue.append(new_path)
 
     return None
 
 
-# -----------------------------
+# -----------------------------------------------------
 # HASH TABLE
-# -----------------------------
+# Vehicle Database
+# -----------------------------------------------------
 
 vehicles = {
 
-    "2AB-1234": {
+    "V001": {
         "Type": "Car",
-        "Location": "Stop 3",
+        "Location": "E",
         "Speed": 45
     },
 
-    "1C-5678": {
+    "V002": {
         "Type": "Motorbike",
-        "Location": "Stop 6",
+        "Location": "F",
         "Speed": 35
     },
 
-    "3D-9999": {
+    "V003": {
         "Type": "Bus",
-        "Location": "Stop 8",
+        "Location": "H",
         "Speed": 30
     },
 
-    "AMB-001": {
+    "AMB001": {
         "Type": "Ambulance",
-        "Location": "Stop 4",
+        "Location": "D",
         "Speed": 70
     }
-
 }
 
 
-# -----------------------------
+# -----------------------------------------------------
 # TREE
-# -----------------------------
+# Traffic Light Decision Tree
+# -----------------------------------------------------
 
-def traffic_light(volume, queue, emergency):
+def traffic_light(volume, queue_length, emergency):
 
     if emergency:
-
-        return "Green Light : 60 Seconds"
+        return "Green Light: 60 Seconds"
 
     if volume.lower() == "high":
 
-        if queue.lower() == "long":
-
-            return "Green Light : 50 Seconds"
+        if queue_length.lower() == "long":
+            return "Green Light: 50 Seconds"
 
         else:
+            return "Green Light: 35 Seconds"
 
-            return "Green Light : 35 Seconds"
-
-    return "Green Light : 25 Seconds"
+    return "Green Light: 25 Seconds"
 
 
-# -----------------------------
+# =====================================================
 # MAIN PROGRAM
-# -----------------------------
+# =====================================================
 
 print("===== SMART TRAFFIC MANAGEMENT SYSTEM =====")
 
-print("\nRoad Network")
+# ---------------- GRAPH ----------------
+
+print("\nROAD NETWORK")
 for stop in road_network:
     print(stop, "->", road_network[stop])
 
-plate = input("\nEnter Plate Number : ")
-
-if plate in vehicles:
-
-    print("\nVehicle Information")
-    print(vehicles[plate])
-
-else:
-
-    print("Vehicle Not Found")
-
-start = input("\nStart Stop : ")
-end = input("Destination Stop : ")
+start = input("\nStart Stop (A-J): ").upper()
+end = input("Destination Stop (A-J): ").upper()
 
 route = shortest_path(road_network, start, end)
 
 if route:
-    print("Shortest Route :", " -> ".join(route))
+    print("Shortest Route:", " -> ".join(route))
 else:
     print("Route Not Found")
 
+# ---------------- HASH TABLE ----------------
+
+plate = input("\nEnter Vehicle ID: ")
+
+if plate in vehicles:
+
+    print("\nVehicle Information")
+    print("Type :", vehicles[plate]["Type"])
+    print("Location :", vehicles[plate]["Location"])
+    print("Speed :", vehicles[plate]["Speed"], "km/h")
+
+else:
+    print("Vehicle Not Found")
+
+# ---------------- TREE ----------------
+
 traffic = input("\nTraffic Volume (High/Low): ")
-queue = input("Queue Length (Long/Short): ")
+queue_length = input("Queue Length (Long/Short): ")
 emergency = input("Emergency Vehicle (Yes/No): ")
 
-result = traffic_light(
+decision = traffic_light(
     traffic,
-    queue,
+    queue_length,
     emergency.lower() == "yes"
 )
 
 print("\nTraffic Decision")
-print(result)
+print(decision)
 
 print("\nSimulation Completed Successfully.")

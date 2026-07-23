@@ -4,43 +4,45 @@
 
 vehicles = {
 
-    "2AB-1234": {
+    "V001": {
         "Type": "Car",
-        "Location": "Stop 3",
+        "Location": "E",
         "Speed": 45
     },
 
-    "1C-5678": {
+    "V002": {
         "Type": "Motorbike",
-        "Location": "Stop 6",
+        "Location": "F",
         "Speed": 35
     },
 
-    "3D-9999": {
+    "V003": {
         "Type": "Bus",
-        "Location": "Stop 8",
+        "Location": "H",
         "Speed": 30
     },
 
-    "AMB-001": {
+    "AMB001": {
         "Type": "Ambulance",
-        "Location": "Stop 4",
+        "Location": "D",
         "Speed": 70
     }
-
 }
 
-plate = input("Enter Plate Number : ")
+# -----------------------------
+# Search Vehicle
+# -----------------------------
 
-if plate in vehicles:
+vehicle_id = input("Enter Vehicle ID: ")
 
-    print("\nVehicle Found\n")
+if vehicle_id in vehicles:
 
-    print("Plate :", plate)
-    print("Type :", vehicles[plate]["Type"])
-    print("Location :", vehicles[plate]["Location"])
-    print("Speed :", vehicles[plate]["Speed"], "km/h")
+    print("\nVehicle Information")
+    print("-------------------")
+    print("Vehicle ID :", vehicle_id)
+    print("Type       :", vehicles[vehicle_id]["Type"])
+    print("Location   :", vehicles[vehicle_id]["Location"])
+    print("Speed      :", vehicles[vehicle_id]["Speed"], "km/h")
 
 else:
-
     print("Vehicle Not Found")

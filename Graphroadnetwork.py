@@ -1,21 +1,71 @@
+from collections import deque
+
 # -----------------------------
 # GRAPH (Road Network)
 # -----------------------------
 
 road_network = {
-    "Stop 1": ["Stop 2"],
-    "Stop 2": ["Stop 1", "Stop 3"],
-    "Stop 3": ["Stop 2", "Stop 4"],
-    "Stop 4": ["Stop 3", "Stop 5"],
-    "Stop 5": ["Stop 4", "Stop 6"],
-    "Stop 6": ["Stop 5", "Stop 7"],
-    "Stop 7": ["Stop 6", "Stop 8"],
-    "Stop 8": ["Stop 7", "Stop 9"],
-    "Stop 9": ["Stop 8", "Stop 10"],
-    "Stop 10": ["Stop 9"]
+    "A": ["B"],
+    "B": ["A", "C"],
+    "C": ["B", "D"],
+    "D": ["C", "E"],
+    "E": ["D", "F"],
+    "F": ["E", "G"],
+    "G": ["F", "H"],
+    "H": ["G", "I"],
+    "I": ["H", "J"],
+    "J": ["I"]
 }
 
-print("========== ROAD NETWORK ==========\n")
+# -----------------------------
+# BFS Shortest Path
+# -----------------------------
 
-for stop in road_network:
-    print(stop, "->", road_network[stop])
+def shortest_path(graph, start, end):
+
+    queue = deque([[start]])
+    visited = set()
+
+    while queue:
+
+        path = queue.popleft()
+        node = path[-1]
+
+        if node == end:
+            return path
+
+        if node not in visited:
+
+            visited.add(node)
+
+            for neighbor in graph[node]:
+                new_path = list(path)
+                new_path.append(neighbor)
+                queue.append(new_path)
+
+    return None
+
+
+# -----------------------------
+# Display Graph
+# -----------------------------
+
+print("===== ROAD NETWORK GRAPH =====")
+
+for junction in road_network:
+    print(junction, "->", road_network[junction])
+
+# -----------------------------
+# Route Search
+# -----------------------------
+
+start = input("\nEnter Start Junction (A-J): ").upper()
+end = input("Enter Destination Junction (A-J): ").upper()
+
+route = shortest_path(road_network, start, end)
+
+if route:
+    print("\nShortest Route:")
+    print(" -> ".join(route))
+else:
+    print("Route Not Found")
