@@ -153,6 +153,17 @@
         </div>
 
         <div class="field">
+          <label for="tspeed-input">Vehicle Speed (km/h)</label>
+          <input
+            type="text"
+            id="tspeed-input"
+            placeholder="e.g. 65"
+            autocomplete="off"
+          />
+          <small class="hint">Example: 65</small>
+        </div>
+
+        <div class="field">
           <label for="temergency-input">Emergency Vehicle</label>
           <select id="temergency-input">
             <option value="no">No</option>
@@ -166,7 +177,8 @@
 
         <p class="tip">
           Tip: a new plate is automatically registered in the hash table
-          using the location entered above.
+          using the location entered above. Speed affects the green time:
+          Fast (&ge; 50 km/h) +10 s, Normal +0 s, Slow (&lt; 30 km/h) +5 s.
         </p>
       </form>
 

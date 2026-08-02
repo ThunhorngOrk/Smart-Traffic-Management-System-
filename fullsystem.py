@@ -261,17 +261,25 @@ def register_vehicle(plate, vehicle_type, location, speed):
 #
 #   Traffic Volume? --High/Low--> Queue Length? --Long/Short--> base timing
 #                                                     |
+#                                       Vehicle Speed? --Fast/Normal/Slow-->
+#                                                     |     +10 / +0 / +5 s
 #                                        Emergency Vehicle? --Yes/No-->
 #                                          Priority Green / Normal Timing
 
-def decide_traffic_light(traffic_volume, queue_length, emergency_vehicle):
+def decide_traffic_light(traffic_volume, queue_length, vehicle_speed, emergency_vehicle):
     """
     Walks the decision tree and returns:
-        {"duration": 60, "signal": "Normal Timing", "path": [...]}
+        {"duration": 70, "signal": "Normal Timing", "path": [...]}
 
     traffic_volume:     "high" or "low"
     queue_length:        "long" or "short"
+    vehicle_speed:      detected speed in km/h (number)
     emergency_vehicle:   True or False
+
+    Speed branch:
+        Slow   (< 30 km/h)  -> +5 s   (slow vehicles clear the box slowly)
+        Normal (30-49 km/h) -> +0 s
+        Fast   (>= 50 km/h) -> +10 s  (fast vehicles need a wider safety window)
     """
     decision_path = [f"Traffic Volume? -> {traffic_volume.title()}"]
 
@@ -291,14 +299,28 @@ def decide_traffic_light(traffic_volume, queue_length, emergency_vehicle):
         else:  # short
             base_duration = 15
 
-    # Branch 3: Emergency Vehicle override (applies after base timing)
+    # Branch 3: Vehicle Speed (adjusts the base timing)
+    if vehicle_speed >= 50:
+        speed_effect = "Fast"
+        speed_adjustment = 10
+    elif vehicle_speed >= 30:
+        speed_effect = "Normal"
+        speed_adjustment = 0
+    else:
+        speed_effect = "Slow"
+        speed_adjustment = 5
+    decision_path.append(
+        f"Vehicle Speed? -> {vehicle_speed} km/h ({speed_effect})"
+    )
+
+    # Branch 4: Emergency Vehicle override (applies after base timing)
     decision_path.append(f"Emergency Vehicle? -> {'Yes' if emergency_vehicle else 'No'}")
     if emergency_vehicle:
         signal = "Priority Green (Extend Time)"
-        duration = base_duration + 20  # extend green light for emergency vehicles
+        duration = base_duration + speed_adjustment + 20  # extend green light
     else:
         signal = "Normal Timing"
-        duration = base_duration
+        duration = base_duration + speed_adjustment
 
     return {"duration": duration, "signal": signal, "path": decision_path}
 
@@ -328,12 +350,10 @@ def run_traffic_light_control():
         print("    Plate not found in Hash Table. Let's register it now.")
         vehicle_type = input("    Vehicle type (Car/Bus/Truck/Motorbike): ").strip() or "Car"
         location = get_valid_node("    Current location (node number 1-10): ")
-        speed_raw = input("    Speed in km/h: ").strip()
-        speed = int(speed_raw) if speed_raw.isdigit() else 0
-        register_vehicle(plate, vehicle_type, location, speed)
+        register_vehicle(plate, vehicle_type, location, 0)
         info = lookup_vehicle(plate)
     print(f"    Found -> Type: {info['type']}, "
-          f"Location: {node_label(info['location'])}, Speed: {info['speed']} km/h")
+          f"Location: {node_label(info['location'])}")
 
     print("\n[4] Mapping location on the Graph (Road Network)...")
     print(f"    Vehicle is at {node_label(info['location'])}.")
@@ -347,10 +367,16 @@ def run_traffic_light_control():
     while queue not in ("long", "short"):
         queue = input("    Queue length? (long/short): ").strip().lower()
 
+    speed_raw = input("    Vehicle speed (km/h): ").strip()
+    speed = int(speed_raw) if speed_raw.isdigit() else 0
+
     emergency_raw = input("    Is this an emergency vehicle? (y/n): ").strip().lower()
     emergency = emergency_raw == "y"
 
-    result = decide_traffic_light(volume, queue, emergency)
+    # Record the latest detected speed in the hash table.
+    register_vehicle(plate, info["type"], info["location"], speed)
+
+    result = decide_traffic_light(volume, queue, speed, emergency)
 
     print("\n    Decision Tree path:")
     for step in result["path"]:
@@ -360,6 +386,7 @@ def run_traffic_light_control():
     print("-" * 72)
     print(f"Vehicle: {plate.upper()} ({info['type']})")
     print(f"Intersection: {node_label(info['location'])}")
+    print(f"Vehicle Speed: {speed} km/h")
     print(f"Signal: {result['signal']}")
     print(f"Green Light Duration: {result['duration']} seconds")
     print("-" * 72)

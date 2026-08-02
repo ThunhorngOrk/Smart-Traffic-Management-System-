@@ -125,7 +125,22 @@ def normalize_emergency(value):
     return None
 
 
-def compute_traffic(plate, volume, queue, emergency, location=None):
+def parse_speed(value):
+    """Turn a speed (number or numeric string) into a non-negative number,
+    or None if it is missing or invalid. Whole values become ints so the
+    JSON output stays clean (e.g. 65 instead of 65.0)."""
+    if value is None or value == "":
+        return None
+    try:
+        speed = float(value)
+    except (TypeError, ValueError):
+        return None
+    if speed < 0:
+        return None
+    return int(speed) if speed.is_integer() else speed
+
+
+def compute_traffic(plate, volume, queue, emergency, location=None, speed=None):
     """Validate the input, look the vehicle up in the hash table, walk the
     decision tree, and build the /api/traffic response."""
     # 1. Plate number must not be empty.
@@ -158,12 +173,21 @@ def compute_traffic(plate, volume, queue, emergency, location=None):
                 "error": "New vehicle plate: please enter a valid current location "
                 "from 1 to 10 to register it.",
             }
-        register_vehicle(plate, "Car", loc, 0)
-        info = lookup_vehicle(plate)
+        info = {"type": "Car", "location": loc, "speed": 0}
         registered = True
 
-    # 6. Walk the decision tree.
-    decision = decide_traffic_light(volume, queue, emergency)
+    # 6. Speed: use the freshly detected speed if provided, otherwise keep
+    #    the vehicle's stored speed (0 for a brand-new plate).
+    detected_speed = parse_speed(speed)
+    if detected_speed is None:
+        detected_speed = info["speed"]
+
+    # 7. Record the latest camera detection back into the hash table.
+    register_vehicle(plate, info["type"], info["location"], detected_speed)
+    info = lookup_vehicle(plate)
+
+    # 8. Walk the decision tree (speed affects the green-light timing).
+    decision = decide_traffic_light(volume, queue, detected_speed, emergency)
 
     return {
         "ok": True,
@@ -171,7 +195,7 @@ def compute_traffic(plate, volume, queue, emergency, location=None):
         "vehicle_type": info["type"],
         "location": info["location"],
         "location_name": NODES[info["location"]],
-        "speed": info["speed"],
+        "speed": detected_speed,
         "registered": registered,
         "volume": volume,
         "queue": queue,
@@ -233,6 +257,7 @@ class RouteHandler(BaseHTTPRequestHandler):
                 data.get("queue"),
                 data.get("emergency"),
                 location=data.get("location"),
+                speed=data.get("speed"),
             )
         else:
             self.send_json({"ok": False, "error": "Unknown endpoint."}, status=404)

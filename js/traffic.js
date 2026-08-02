@@ -25,7 +25,7 @@ const VEHICLES = {
 };
 
 // ----- Client-side copy of the decision tree (offline fallback only) -----
-function decideTrafficLight(volume, queue, emergency) {
+function decideTrafficLight(volume, queue, speed, emergency) {
   const path = ["Traffic Volume? -> " + cap(volume)];
 
   let base;
@@ -37,15 +37,30 @@ function decideTrafficLight(volume, queue, emergency) {
     base = queue === "long" ? 30 : 15;
   }
 
+  // Speed branch: Slow (<30) +5s, Normal (30-49) +0s, Fast (>=50) +10s.
+  let effect;
+  let adjustment;
+  if (speed >= 50) {
+    effect = "Fast";
+    adjustment = 10;
+  } else if (speed >= 30) {
+    effect = "Normal";
+    adjustment = 0;
+  } else {
+    effect = "Slow";
+    adjustment = 5;
+  }
+  path.push("Vehicle Speed? -> " + speed + " km/h (" + effect + ")");
+
   path.push("Emergency Vehicle? -> " + (emergency ? "Yes" : "No"));
   if (emergency) {
     return {
       signal: "Priority Green (Extend Time)",
-      duration: base + 20,
+      duration: base + adjustment + 20,
       path: path,
     };
   }
-  return { signal: "Normal Timing", duration: base, path: path };
+  return { signal: "Normal Timing", duration: base + adjustment, path: path };
 }
 
 function cap(text) {
@@ -59,6 +74,7 @@ const tlocInput = document.getElementById("tloc-input");
 const tlocPreview = document.getElementById("tloc-preview");
 const tvolumeInput = document.getElementById("tvolume-input");
 const tqueueInput = document.getElementById("tqueue-input");
+const tspeedInput = document.getElementById("tspeed-input");
 const temergencyInput = document.getElementById("temergency-input");
 const trafficBtn = document.getElementById("traffic-btn");
 const trafficResult = document.getElementById("traffic-result");
@@ -86,6 +102,13 @@ trafficForm.addEventListener("submit", (event) => {
     return;
   }
 
+  // 3. Speed is optional; blank/invalid falls back to the stored value.
+  const speedRaw = tspeedInput.value.trim();
+  let speed = Number(speedRaw);
+  if (!speedRaw || !isFinite(speed) || speed < 0) {
+    speed = null;
+  }
+
   const volume = tvolumeInput.value; // "high" | "low"
   const queue = tqueueInput.value; // "long" | "short"
   const emergency = temergencyInput.value === "yes";
@@ -102,6 +125,7 @@ trafficForm.addEventListener("submit", (event) => {
       volume: volume,
       queue: queue,
       emergency: emergency,
+      speed: speed,
     }),
   })
     .then((res) => res.json())
@@ -124,7 +148,9 @@ trafficForm.addEventListener("submit", (event) => {
         VEHICLES[key] = info;
         registered = true;
       }
-      const decision = decideTrafficLight(volume, queue, emergency);
+      const detectedSpeed = speed === null ? info.speed : speed;
+      info.speed = detectedSpeed; // record the latest detection
+      const decision = decideTrafficLight(volume, queue, detectedSpeed, emergency);
       resetTrafficButton();
 
       handleTrafficData({
@@ -133,7 +159,7 @@ trafficForm.addEventListener("submit", (event) => {
         vehicle_type: info.type,
         location: info.location,
         location_name: NODE_NAMES[info.location],
-        speed: info.speed,
+        speed: detectedSpeed,
         registered: registered,
         volume: volume,
         queue: queue,
