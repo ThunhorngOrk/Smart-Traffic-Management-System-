@@ -98,7 +98,6 @@ def compute_route(plate, start_raw, dest_raw):
 
     return {
         "ok": True,
-        "message": "Recommended route found.",
         "plate": plate,
         "start": start,
         "dest": dest,

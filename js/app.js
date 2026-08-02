@@ -35,7 +35,7 @@ renderGraph(graphContainer, {
     activeNodeInput.value = nodeId;
     activeNodeInput.dispatchEvent(new Event("input"));
     activeNodeInput.focus();
-  }
+  },
 });
 
 // ----- Live location preview under each node input -----
@@ -48,11 +48,17 @@ function showNodePreview(input, preview) {
   }
 }
 
-fromInput.addEventListener("input", () => showNodePreview(fromInput, fromPreview));
+fromInput.addEventListener("input", () =>
+  showNodePreview(fromInput, fromPreview),
+);
 toInput.addEventListener("input", () => showNodePreview(toInput, toPreview));
 
-fromInput.addEventListener("focus", () => { activeNodeInput = fromInput; });
-toInput.addEventListener("focus", () => { activeNodeInput = toInput; });
+fromInput.addEventListener("focus", () => {
+  activeNodeInput = fromInput;
+});
+toInput.addEventListener("focus", () => {
+  activeNodeInput = toInput;
+});
 
 /* ------------------------------------------------------------
    Validation helpers (client-side pre-check for instant feedback;
@@ -124,7 +130,7 @@ form.addEventListener("submit", (event) => {
   fetch("/api/route", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ plate: plate, start: start, dest: dest })
+    body: JSON.stringify({ plate: plate, start: start, dest: dest }),
   })
     .then((res) => res.json())
     .then((data) => {
@@ -154,7 +160,7 @@ form.addEventListener("submit", (event) => {
         .filter(
           (r) =>
             Math.abs(r.distance - local.distance) > 0.0001 ||
-            r.path.join(",") !== local.path.join(",")
+            r.path.join(",") !== local.path.join(","),
         )
         .slice(0, 3);
 
@@ -169,7 +175,7 @@ form.addEventListener("submit", (event) => {
         dest_name: NODE_NAMES[dest],
         path: local.path,
         distance: local.distance,
-        alternatives: alternatives
+        alternatives: alternatives,
       });
     });
 });
@@ -186,7 +192,7 @@ function handleRouteData(data) {
       activeNodeInput.value = nodeId;
       activeNodeInput.dispatchEvent(new Event("input"));
       activeNodeInput.focus();
-    }
+    },
   });
 
   // Scroll results into view on small screens.
@@ -216,9 +222,13 @@ function renderResult(data) {
     .map(
       (id) =>
         '<div class="step-node">' +
-        '<span class="step-num">Node ' + id + "</span>" +
-        '<span class="step-name">' + escapeHtml(NODE_NAMES[id]) + "</span>" +
-        "</div>"
+        '<span class="step-num">Node ' +
+        id +
+        "</span>" +
+        '<span class="step-name">' +
+        escapeHtml(NODE_NAMES[id]) +
+        "</span>" +
+        "</div>",
     )
     .join('<div class="step-desc">&#8595;</div>');
 
@@ -231,10 +241,15 @@ function renderResult(data) {
         .map(
           (r, i) =>
             '<div class="alt-row">' +
-            '<span class="alt-path">Route ' + (i + 1) + ": " +
-            r.path.join(" &rarr; ") + "</span>" +
-            '<span class="alt-dist">' + r.distance.toFixed(1) + " km</span>" +
-            "</div>"
+            '<span class="alt-path">Route ' +
+            (i + 1) +
+            ": " +
+            r.path.join(" &rarr; ") +
+            "</span>" +
+            '<span class="alt-dist">' +
+            r.distance.toFixed(1) +
+            " km</span>" +
+            "</div>",
         )
         .join("") +
       "</div>";
@@ -243,27 +258,34 @@ function renderResult(data) {
   resultBox.innerHTML =
     '<div class="route-meta">' +
     '<div class="meta-item"><span class="meta-label">Vehicle Plate</span>' +
-    '<span class="meta-value">' + escapeHtml(data.plate) + "</span></div>" +
+    '<span class="meta-value">' +
+    escapeHtml(data.plate) +
+    "</span></div>" +
     '<div class="meta-item"><span class="meta-label">From</span>' +
-    '<span class="meta-value">Node ' + data.start + " - " +
-    escapeHtml(data.start_name) + "</span></div>" +
+    '<span class="meta-value">Node ' +
+    data.start +
+    " - " +
+    escapeHtml(data.start_name) +
+    "</span></div>" +
     '<div class="meta-item"><span class="meta-label">To</span>' +
-    '<span class="meta-value">Node ' + data.dest + " - " +
-    escapeHtml(data.dest_name) + "</span></div>" +
+    '<span class="meta-value">Node ' +
+    data.dest +
+    " - " +
+    escapeHtml(data.dest_name) +
+    "</span></div>" +
     "</div>" +
-
-    '<div class="success-banner">&#9989; ' +
-    escapeHtml(data.message || "Recommended route found.") + "</div>" +
-
     '<div class="shortest-route">' +
-    "<h3>Shortest Route (Dijkstra's Algorithm)</h3>" +
-    '<div class="path-string">' + pathString + "</div>" +
-    '<div class="total-distance">Total Distance: <strong>' +
-    total.toFixed(1) + " km</strong></div>" +
+    "<h3>Shortest Route</h3>" +
+    '<div class="path-string">' +
+    pathString +
     "</div>" +
-
+    '<div class="total-distance">Total Distance: <strong>' +
+    total.toFixed(1) +
+    " km</strong></div>" +
+    "</div>" +
     '<div class="shortest-route"><h3>Route Details</h3>' +
-    '<div class="node-steps">' + steps + "</div></div>" +
-
+    '<div class="node-steps">' +
+    steps +
+    "</div></div>" +
     altHtml;
 }

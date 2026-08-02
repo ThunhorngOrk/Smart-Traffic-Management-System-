@@ -1,8 +1,5 @@
-# ============================================================
 #  GRAPH DATA — Phnom Penh Road Network
-# ============================================================
 #  DATA STRUCTURE DEMONSTRATION (DSA)
-#  -----------------------------------
 #  Each road intersection is a NODE (vertex) of the graph.
 #  Each road connecting two intersections is an EDGE with a
 #  distance measured in kilometres.

@@ -1,6 +1,21 @@
-# -----------------------------
-# TREE (Traffic Light Decision)
-# -----------------------------
+# ============================================================
+#  TREE — Traffic Light Decision Making
+# ============================================================
+#  DATA STRUCTURE DEMONSTRATION (DSA)
+#  The traffic-light rule is a DECISION TREE:
+#
+#            [Emergency vehicle?]
+#            /              \
+#          yes               no
+#          |                  [Volume high?]
+#          |                 /            \
+#          |              yes              no
+#          |             /    \              \
+#          |      [Queue long?]             25s
+#          |       /        \
+#          |     50s         35s
+#         60s
+# ============================================================
 
 def traffic_light(volume, queue_length, emergency):
 
@@ -19,19 +34,19 @@ def traffic_light(volume, queue_length, emergency):
         return "Green Light : 25 Seconds"
 
 
-# -----------------------------
-# User Input
-# -----------------------------
+if __name__ == "__main__":
 
-traffic = input("Traffic Volume (High/Low): ")
-queue_length = input("Queue Length (Long/Short): ")
-emergency = input("Emergency Vehicle (Yes/No): ")
+    print("===== TREE (TRAFFIC LIGHT DECISION) =====")
 
-result = traffic_light(
-    traffic,
-    queue_length,
-    emergency.lower() == "yes"
-)
+    traffic = input("Traffic Volume (High/Low): ")
+    queue_length = input("Queue Length (Long/Short): ")
+    emergency = input("Emergency Vehicle (Yes/No): ")
 
-print("\nTraffic Decision")
-print(result)
+    result = traffic_light(
+        traffic,
+        queue_length,
+        emergency.lower() == "yes"
+    )
+
+    print("\nTraffic Decision")
+    print(result)
