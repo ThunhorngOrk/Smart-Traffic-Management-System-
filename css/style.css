@@ -110,6 +110,24 @@ body {
   background: #ffffff;
 }
 
+.field select {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 9px;
+  background: #fbfdff;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+  background: #ffffff;
+}
+
 .hint {
   display: block;
   margin-top: 4px;
@@ -147,6 +165,131 @@ body {
 
 #find-btn:active {
   transform: translateY(0);
+}
+
+/* ---------------- Traffic Light Control ---------------- */
+.traffic-card {
+  max-width: 1150px;
+  margin: 20px auto 0;
+}
+
+.traffic-intro {
+  margin: 0 0 16px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.traffic-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+#traffic-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+#traffic-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+#traffic-btn:active {
+  transform: translateY(0);
+}
+
+#traffic-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.traffic-result {
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  min-height: 120px;
+}
+
+.traffic-result .placeholder {
+  color: var(--muted);
+  margin: 4px 0;
+}
+
+.tree-path {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tree-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.tree-arrow {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.traffic-decision {
+  margin-top: 16px;
+  border-top: 1px dashed var(--border);
+  padding-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.signal-badge {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+.duration-big {
+  font-size: 1rem;
+  color: var(--primary-dark);
+}
+
+.duration-big strong {
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.registered-badge {
+  display: inline-block;
+  margin-top: 6px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
 .tip {
@@ -400,6 +543,10 @@ body {
 /* ---------------- Responsive ---------------- */
 @media (max-width: 880px) {
   .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .traffic-grid {
     grid-template-columns: 1fr;
   }
 }

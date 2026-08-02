@@ -20,6 +20,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from dijkstra import dijkstra, find_alternative_routes
 from graph import GRAPH, NODES
+from hashtable import lookup_vehicle, register_vehicle
+from tree import decide_traffic_light
 
 # Folder that contains this script (where index.html lives).
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -109,6 +111,77 @@ def compute_route(plate, start_raw, dest_raw):
     }
 
 
+def normalize_emergency(value):
+    """Turn a boolean / 'yes' / 'y' / 'no' / etc. into True or False.
+    Returns None if the value cannot be understood."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        text = value.strip().lower()
+        if text in ("y", "yes", "true", "1"):
+            return True
+        if text in ("n", "no", "false", "0"):
+            return False
+    return None
+
+
+def compute_traffic(plate, volume, queue, emergency, location=None):
+    """Validate the input, look the vehicle up in the hash table, walk the
+    decision tree, and build the /api/traffic response."""
+    # 1. Plate number must not be empty.
+    if not plate:
+        return {"ok": False, "error": "Please enter your vehicle plate number."}
+
+    # 2. Traffic volume must be high or low.
+    volume = (volume or "").strip().lower()
+    if volume not in ("high", "low"):
+        return {"ok": False, "error": "Traffic volume must be 'high' or 'low'."}
+
+    # 3. Queue length must be long or short.
+    queue = (queue or "").strip().lower()
+    if queue not in ("long", "short"):
+        return {"ok": False, "error": "Queue length must be 'long' or 'short'."}
+
+    # 4. Emergency vehicle flag must be yes or no.
+    emergency = normalize_emergency(emergency)
+    if emergency is None:
+        return {"ok": False, "error": "Emergency vehicle must be yes or no."}
+
+    # 5. Hash Table lookup; a brand-new plate is registered automatically.
+    info = lookup_vehicle(plate)
+    registered = False
+    if info is None:
+        loc = parse_node(location)
+        if loc is None:
+            return {
+                "ok": False,
+                "error": "New vehicle plate: please enter a valid current location "
+                "from 1 to 10 to register it.",
+            }
+        register_vehicle(plate, "Car", loc, 0)
+        info = lookup_vehicle(plate)
+        registered = True
+
+    # 6. Walk the decision tree.
+    decision = decide_traffic_light(volume, queue, emergency)
+
+    return {
+        "ok": True,
+        "plate": plate.upper(),
+        "vehicle_type": info["type"],
+        "location": info["location"],
+        "location_name": NODES[info["location"]],
+        "speed": info["speed"],
+        "registered": registered,
+        "volume": volume,
+        "queue": queue,
+        "emergency": emergency,
+        "signal": decision["signal"],
+        "duration": decision["duration"],
+        "path": decision["path"],
+    }
+
+
 # ------------------------------------------------------------
 #  HTTP handler
 # ------------------------------------------------------------
@@ -137,11 +210,9 @@ class RouteHandler(BaseHTTPRequestHandler):
         ext = os.path.splitext(rel)[1].lower()
         self.serve_file(rel, CONTENT_TYPES.get(ext, "application/octet-stream"))
 
-    # ----- POST: /api/route runs Dijkstra -----
+    # ----- POST: /api/route (Dijkstra) and /api/traffic (decision tree) -----
     def do_POST(self):
-        if self.path.split("?")[0] != "/api/route":
-            self.send_json({"ok": False, "error": "Unknown endpoint."}, status=404)
-            return
+        endpoint = self.path.split("?")[0]
 
         length = int(self.headers.get("Content-Length", 0) or 0)
         raw = self.rfile.read(length) if length else b""
@@ -151,8 +222,22 @@ class RouteHandler(BaseHTTPRequestHandler):
         except (ValueError, UnicodeDecodeError):
             data = {}
 
-        plate = (data.get("plate") or "").strip()
-        response = compute_route(plate, data.get("start"), data.get("dest"))
+        if endpoint == "/api/route":
+            plate = (data.get("plate") or "").strip()
+            response = compute_route(plate, data.get("start"), data.get("dest"))
+        elif endpoint == "/api/traffic":
+            plate = (data.get("plate") or "").strip()
+            response = compute_traffic(
+                plate,
+                data.get("volume"),
+                data.get("queue"),
+                data.get("emergency"),
+                location=data.get("location"),
+            )
+        else:
+            self.send_json({"ok": False, "error": "Unknown endpoint."}, status=404)
+            return
+
         self.send_json(response)
 
     # ----- small file-serving helper -----
@@ -205,7 +290,7 @@ def main():
 
     print("=============================================")
     print("  Phnom Penh Smart Traffic Route System")
-    print("  Graph + Dijkstra's Algorithm (Python)")
+    print("  Graph + Dijkstra + Hash Table + Decision Tree")
     print("=============================================")
     print("  Serving at:  {}".format(url))
     print("  Press Ctrl+C to stop.")
