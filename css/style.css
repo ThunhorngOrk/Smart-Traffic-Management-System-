@@ -1,0 +1,405 @@
+/* ============================================================
+   PHNOM PENH SMART TRAFFIC ROUTE SYSTEM — STYLES
+   Clean blue / white student-project design.
+   ============================================================ */
+
+:root {
+  --primary: #1d4ed8;
+  --primary-dark: #1e40af;
+  --primary-light: #eff6ff;
+  --accent: #16a34a;
+  --alt: #f59e0b;
+  --dest: #dc2626;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #dbe7f5;
+  --card-shadow: 0 6px 20px rgba(29, 78, 216, 0.10);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background: linear-gradient(160deg, #eaf3ff 0%, #ffffff 55%, #eef6ff 100%);
+  min-height: 100vh;
+  padding: 24px 16px 32px;
+}
+
+/* ---------------- Header ---------------- */
+.site-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.site-header .header-icon {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.site-header h1 {
+  margin: 6px 0 2px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--primary-dark);
+  letter-spacing: 0.3px;
+}
+
+.site-header .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+}
+
+/* ---------------- Layout ---------------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) 1fr;
+  gap: 20px;
+  max-width: 1150px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  color: var(--primary-dark);
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 10px;
+}
+
+/* ---------------- Form ---------------- */
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.field input {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 9px;
+  background: #fbfdff;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+  background: #ffffff;
+}
+
+.hint {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.location-preview {
+  display: block;
+  min-height: 16px;
+  margin-top: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+#find-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+#find-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+#find-btn:active {
+  transform: translateY(0);
+}
+
+.tip {
+  margin: 14px 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------------- Graph ---------------- */
+#graph-container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background:
+    radial-gradient(circle at 50% 50%, #f6faff 0%, #eef5ff 100%);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-line {
+  width: 26px;
+  height: 4px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-line.recommended {
+  background: var(--accent);
+}
+
+.legend-line.alternative {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--alt) 0 4px,
+    transparent 4px 7px
+  );
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #cbd5e1;
+}
+
+.legend-dot.start {
+  background: var(--accent);
+}
+
+.legend-dot.dest {
+  background: var(--dest);
+}
+
+/* ---------------- Result ---------------- */
+.result-card {
+  max-width: 1150px;
+  margin: 20px auto 0;
+}
+
+.result-box {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.result-box .placeholder {
+  color: var(--muted);
+  margin: 4px 0;
+}
+
+/* Error message */
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-weight: 600;
+}
+
+/* Route summary blocks */
+.route-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.route-meta .meta-item {
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 12px;
+}
+
+.route-meta .meta-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.route-meta .meta-value {
+  font-weight: 700;
+  color: var(--primary-dark);
+  font-size: 0.95rem;
+}
+
+.success-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* Shortest route string */
+.shortest-route {
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.shortest-route h3,
+.alternatives h3 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: var(--primary-dark);
+}
+
+.path-string {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.path-string .arrow {
+  color: var(--alt);
+  font-weight: 900;
+}
+
+.total-distance {
+  margin-top: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+/* Node-by-node step list */
+.node-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 6px;
+}
+
+.step-node {
+  background: #ffffff;
+  border: 2px solid var(--primary);
+  border-radius: 9px;
+  padding: 8px 12px;
+  display: inline-flex;
+  flex-direction: column;
+  width: fit-content;
+  color: var(--primary-dark);
+}
+
+.step-node .step-num {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.step-node .step-name {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.step-desc {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 4px 0 4px 14px;
+}
+
+/* Alternative routes */
+.alternatives {
+  margin-top: 16px;
+  border-top: 1px dashed var(--border);
+  padding-top: 14px;
+}
+
+.alt-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px dashed var(--alt);
+  border-radius: 9px;
+  margin-bottom: 8px;
+  background: #fffbeb;
+}
+
+.alt-row .alt-path {
+  font-weight: 700;
+  color: #b45309;
+}
+
+.alt-row .alt-dist {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ---------------- Footer ---------------- */
+.site-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 880px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
