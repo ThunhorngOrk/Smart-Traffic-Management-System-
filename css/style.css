@@ -403,3 +403,70 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------- Phone (mobile) ---------------- */
+@media (max-width: 640px) {
+  body {
+    padding: 12px 10px 24px;
+  }
+
+  .site-header {
+    margin-bottom: 16px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .card h2 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field input {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  #find-btn {
+    padding: 14px;
+    font-size: 1.05rem;
+  }
+
+  .legend {
+    gap: 10px;
+    font-size: 0.72rem;
+  }
+
+  .result-card {
+    margin: 16px auto 0;
+  }
+
+  .route-meta {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .path-string {
+    font-size: 1.05rem;
+    gap: 6px;
+    overflow-wrap: anywhere;
+  }
+
+  .alt-row {
+    gap: 6px;
+  }
+
+  .node-steps .step-node {
+    width: 100%;
+  }
+
+  .site-footer {
+    margin-top: 20px;
+  }
+}
