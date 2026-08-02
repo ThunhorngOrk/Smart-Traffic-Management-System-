@@ -162,7 +162,6 @@ form.addEventListener("submit", (event) => {
 
       handleRouteData({
         ok: true,
-        message: "Recommended route found. (offline - run 'python app.py' to use the Python backend)",
         plate: plate,
         start: start,
         dest: dest,
